@@ -1,9 +1,13 @@
 /**
  * API Service Layer for URL Safety Checker
- * Connects frontend React client to Express & MongoDB backend.
+ * Supports both local development and production cloud deployment (Render, Vercel, Netlify).
  */
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
+  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000/api'
+    : '/api';
 
 export async function analyzeUrl(url) {
   try {
@@ -91,7 +95,7 @@ export async function clearAllHistory() {
 
 export async function checkBackendHealth() {
   try {
-    const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(2500) });
     return await res.json();
   } catch (err) {
     return { status: 'offline', error: err.message };
