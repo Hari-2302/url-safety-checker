@@ -41,18 +41,18 @@ function saveFallbackStore() {
 }
 
 async function connectDB() {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/url_safety_checker';
+  const uri = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/url_safety_checker';
   dbState.uri = uri;
 
   try {
     console.log(`[DB] Attempting MongoDB connection to: ${uri}`);
     await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2500
+      serverSelectionTimeoutMS: 10000
     });
 
     dbState.isConnected = true;
     dbState.mode = 'MONGODB_CONNECTED';
-    console.log('✅ [DB] Successfully connected to MongoDB server');
+    console.log('✅ [DB] Successfully connected to MongoDB Atlas / server');
   } catch (error) {
     dbState.isConnected = false;
     dbState.mode = 'FALLBACK_LOCAL_STORE';
